@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fash90Hzz · Al-Qur'an 30 Juz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f3f7fc;
+            font-family: 'Inter', sans-serif;
+            color: #1e2c3a;
+            padding: 20px 16px 40px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-wrapper { max-width: 900px; width: 100%; }
+
+        .brand {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+        }
+        .brand h1 {
+            font-size: 2rem; font-weight: 700; letter-spacing: -0.5px;
+            background: linear-gradient(145deg, #0b3b5c, #1f6e9c);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; display: flex; align-items: center; gap: 10px;
+        }
+        .brand h1 i { font-size: 1.8rem; color: #1f6e9c; -webkit-text-fill-color: #1f6e9c; }
+        .badge {
+            background: #d9e9f5; padding: 8px 16px; border-radius: 40px;
+            font-size: 0.9rem; font-weight: 600; color: #0b3b5c;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .tabs {
+            display: flex; gap: 8px; background: white; padding: 8px;
+            border-radius: 60px; box-shadow: 0 8px 18px rgba(0, 35, 60, 0.06);
+            margin-bottom: 28px; border: 1px solid #d9e5ef;
+        }
+        .tab-btn {
+            flex: 1; border: none; background: transparent; padding: 14px 12px;
+            border-radius: 40px; font-size: 0.95rem; font-weight: 600;
+            color: #4a6072; cursor: pointer; transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            white-space: nowrap;
+        }
+        .tab-btn i { font-size: 1rem; }
+        .tab-btn.active { background: #1f6e9c; color: white; box-shadow: 0 6px 14px rgba(31, 110, 156, 0.25); }
+        .tab-btn:not(.active):hover { background: #e2eef9; color: #0b3b5c; }
+
+        .panel { display: none; animation: fade 0.25s ease; }
+        .panel.active { display: block; }
+        @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Loading */
+        .loading-spinner {
+            text-align: center; padding: 40px 20px; color: #4a7a9c;
+        }
+        .loading-spinner i { font-size: 2rem; margin-bottom: 12px; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Surah list */
+        .surah-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .surah-item {
+            background: white; border-radius: 24px; padding: 16px 22px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0, 30, 50, 0.04);
+            border: 1px solid #e2eef9; cursor: pointer; transition: all 0.15s;
+        }
+        .surah-item:hover {
+            border-color: #1f6e9c; background: #f5faff; transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(31, 110, 156, 0.08);
+        }
+        .surah-left { display: flex; align-items: center; gap: 18px; }
+        .surah-number {
+            background: #e2eef9; width: 44px; height: 44px; border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: #1f6e9c; font-size: 1rem;
+        }
+        .surah-name h4 { font-size: 1.15rem; font-weight: 700; color: #0b2b3f; margin-bottom: 4px; }
+        .surah-name span { font-size: 0.8rem; color: #62819a; font-weight: 500; }
+        .surah-arabic { font-family: 'Amiri Quran', serif; font-size: 1.4rem; color: #1f6e9c; opacity: 0.9; }
+
+        /* Reading area */
+        .reading-area {
+            margin-top: 24px; background: white; border-radius: 28px;
+            padding: 26px; box-shadow: 0 12px 28px rgba(0, 30, 50, 0.06);
+            border: 1px solid #d9e9f5;
+        }
+        .reading-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px; border-bottom: 1px solid #e2eef9; padding-bottom: 16px;
+            flex-wrap: wrap; gap: 10px;
+        }
+        .reading-header h3 { font-size: 1.3rem; color: #0b2b3f; }
+        .reading-header .juz-badge {
+            background: #e2eef9; padding: 6px 14px; border-radius: 40px;
+            font-size: 0.8rem; font-weight: 600; color: #1f6e9c;
+        }
+        .reading-header .close-read {
+            background: none; border: none; font-size: 1.6rem;
+            color: #9ab3c7; cursor: pointer; transition: 0.2s; line-height: 1;
+        }
+        .reading-header .close-read:hover { color: #1f6e9c; }
+
+        .ayat-control {
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+            margin-bottom: 20px; background: #f3f9ff; padding: 14px 18px;
+            border-radius: 40px;
+        }
+        .ayat-control label { font-weight: 600; font-size: 0.9rem; color: #4a6072; }
+        .ayat-control input {
+            padding: 10px 16px; border-radius: 40px; border: 1px solid #c4d9ec;
+            font-size: 1rem; font-weight: 500; width: 80px; text-align: center; background: white;
+        }
+        .ayat-control button {
+            background: #1f6e9c; border: none; color: white; padding: 10px 22px;
+            border-radius: 40px; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .ayat-control button:hover { background: #0b4c72; }
+
+        .ayat-text {
+            font-family: 'Amiri Quran', serif; font-size: 2rem; line-height: 2.2;
+            text-align: right; direction: rtl; padding: 24px 12px;
+            background: #fafdff; border-radius: 24px; margin: 16px 0;
+            border: 1px dashed #b8d1e3; color: #0b2b3f; min-height: 100px;
+        }
+        .ayat-translation {
+            background: #f2f9ff; padding: 18px 24px; border-radius: 20px;
+            color: #1e3e55; font-size: 1rem; line-height: 1.6;
+            margin-bottom: 18px; border-left: 6px solid #1f6e9c;
+            min-height: 60px;
+        }
+        .reading-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 16px; margin-top: 18px;
+        }
+        .ayat-nav { display: flex; gap: 8px; }
+        .ayat-nav button {
+            background: #e2eef9; border: none; padding: 12px 20px; border-radius: 40px;
+            font-weight: 600; color: #1f6e9c; cursor: pointer; transition: 0.2s;
+        }
+        .ayat-nav button:hover { background: #c7dff2; }
+        .ayat-nav button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .progress-saved {
+            font-size: 0.85rem; color: #4a7a9c; background: #e2eef9;
+            padding: 8px 18px; border-radius: 40px; display: flex; align-items: center; gap: 8px;
+        }
+
+        /* Last read card */
+        .last-read-card {
+            background: white; border-radius: 28px; padding: 24px 26px;
+            box-shadow: 0 12px 28px rgba(0, 30, 50, 0.06);
+            border: 1px solid #d9e9f5; margin-bottom: 24px;
+        }
+        .last-read-header {
+            display: flex; align-items: center; gap: 12px; color: #1f6e9c;
+            font-weight: 600; text-transform: uppercase; font-size: 0.8rem;
+            letter-spacing: 1px; margin-bottom: 18px;
+        }
+        .last-read-header i { font-size: 1rem; }
+        .last-read-content {
+            display: flex; flex-wrap: wrap; align-items: center;
+            justify-content: space-between; gap: 18px;
+        }
+        .surah-info h3 { font-size: 1.6rem; font-weight: 700; color: #0b2b3f; margin-bottom: 6px; }
+        .surah-info p { color: #54738c; font-size: 0.95rem; display: flex; gap: 16px; flex-wrap: wrap; }
+        .surah-info p i { margin-right: 4px; color: #1f6e9c; }
+        .ayat-badge {
+            background: #e2eef9; border-radius: 40px; padding: 10px 22px;
+            font-weight: 600; color: #0b3b5c; font-size: 0.95rem; white-space: nowrap;
+        }
+        .ayat-badge i { margin-right: 6px; }
+        .btn-lanjut {
+            background: #1f6e9c; border: none; color: white; padding: 16px 28px;
+            border-radius: 60px; font-weight: 600; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            cursor: pointer; transition: 0.2s;
+            box-shadow: 0 8px 18px rgba(31, 110, 156, 0.25);
+            width: 100%; margin-top: 16px;
+        }
+        .btn-lanjut:hover { background: #0b4c72; transform: scale(1.01); }
+        .btn-lanjut:active { transform: scale(0.99); }
+
+        .empty-state { text-align: center; padding: 30px 20px; color: #7a95aa; }
+        .empty-state i { font-size: 2.6rem; margin-bottom: 12px; color: #b8d1e3; }
+
+        .hidden { display: none !important; }
+
+        @media (min-width: 640px) {
+            body { padding: 32px 24px 60px; }
+            .surah-grid { grid-template-columns: repeat(2, 1fr); }
+            .brand h1 { font-size: 2.4rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <div class="brand">
+        <h1><i class="fas fa-quran"></i> Fash90Hzz</h1>
+        <div class="badge"><i class="fas fa-book-open"></i> 30 Juz</div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="tab-surah" id="tabSurahBtn">
+            <i class="fas fa-list-ul"></i> Surah
+        </button>
+        <button class="tab-btn" data-tab="tab-juz" id="tabJuzBtn">
+            <i class="fas fa-layer-group"></i> Juz
+        </button>
+        <button class="tab-btn" data-tab="tab-last" id="tabLastBtn">
+            <i class="fas fa-history"></i> Terakhir
+        </button>
+    </div>
+
+    <!-- Tab Surah -->
+    <div id="tab-surah" class="panel active">
+        <div id="surahLoading" class="loading-spinner"><i class="fas fa-spinner"></i><p>Memuat daftar surah...</p></div>
+        <div class="surah-grid hidden" id="surahGrid"></div>
+    </div>
+
+    <!-- Tab Juz -->
+    <div id="tab-juz" class="panel">
+        <div class="surah-grid" id="juzGrid"></div>
+    </div>
+
+    <!-- Tab Terakhir -->
+    <div id="tab-last" class="panel">
+        <div class="last-read-card" id="lastReadCard"></div>
+    </div>
+
+    <!-- Reading Area (muncul di tab surah/juz) -->
+    <div id="readingContainer" class="reading-area hidden">
+        <div class="reading-header">
+            <h3 id="readingSurahName">—</h3>
+            <span class="juz-badge" id="readingJuzBadge">Juz —</span>
+            <button class="close-read" id="closeReadingBtn"><i class="fas fa-times-circle"></i></button>
+        </div>
+        <div class="ayat-control">
+            <label for="ayatNumber">Ayat ke-</label>
+            <input type="number" id="ayatNumber" min="1" value="1">
+            <button id="goAyatBtn"><i class="fas fa-arrow-right"></i> Buka</button>
+        </div>
+        <div id="ayatDisplay" class="ayat-text">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+        <div id="translationDisplay" class="ayat-translation">Dengan menyebut nama Allah Yang Maha Pengasih, Maha Penyayang.</div>
+        <div class="reading-footer">
+            <div class="ayat-nav">
+                <button id="prevAyatBtn"><i class="fas fa-chevron-left"></i> Sebelumnya</button>
+                <button id="nextAyatBtn">Selanjutnya <i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="progress-saved" id="progressSavedLabel">
+                <i class="fas fa-check-circle"></i> Tersimpan
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== KONFIGURASI API ====================
+    const API_BASE = 'https://equran.id/api/v2';
+
+    // ==================== PEMETAAN 30 JUZ (rentang surah:ayat) ====================
+    // Referensi: rentang standar juz [citation:11]
+    const JUZ_RANGES = [
+        { juz: 1,  start: { surah: 1, ayat: 1 },   end: { surah: 2, ayat: 141 } },
+        { juz: 2,  start: { surah: 2, ayat: 142 }, end: { surah: 2, ayat: 252 } },
+        { juz: 3,  start: { surah: 2, ayat: 253 }, end: { surah: 3, ayat: 91 } },
+        { juz: 4,  start: { surah: 3, ayat: 92 },  end: { surah: 4, ayat: 23 } },
+        { juz: 5,  start: { surah: 4, ayat: 24 },  end: { surah: 4, ayat: 147 } },
+        { juz: 6,  start: { surah: 4, ayat: 148 }, end: { surah: 5, ayat: 82 } },
+        { juz: 7,  start: { surah: 5, ayat: 83 },  end: { surah: 6, ayat: 110 } },
+        { juz: 8,  start: { surah: 6, ayat: 111 }, end: { surah: 7, ayat: 87 } },
+        { juz: 9,  start: { surah: 7, ayat: 88 },  end: { surah: 8, ayat: 40 } },
+        { juz: 10, start: { surah: 8, ayat: 41 },  end: { surah: 9, ayat: 93 } },
+        { juz: 11, start: { surah: 9, ayat: 94 },  end: { surah: 11, ayat: 5 } },
+        { juz: 12, start: { surah: 11, ayat: 6 },  end: { surah: 12, ayat: 52 } },
+        { juz: 13, start: { surah: 12, ayat: 53 }, end: { surah: 14, ayat: 1 } },
+        { juz: 14, start: { surah: 14, ayat: 2 },  end: { surah: 16, ayat: 128 } },
+        { juz: 15, start: { surah: 17, ayat: 1 },  end: { surah: 18, ayat: 74 } },
+        { juz: 16, start: { surah: 18, ayat: 75 }, end: { surah: 20, ayat: 135 } },
+        { juz: 17, start: { surah: 21, ayat: 1 },  end: { surah: 22, ayat: 78 } },
+        { juz: 18, start: { surah: 23, ayat: 1 },  end: { surah: 25, ayat: 20 } },
+        { juz: 19, start: { surah: 25, ayat: 21 }, end: { surah: 27, ayat: 59 } },
+        { juz: 20, start: { surah: 27, ayat: 60 }, end: { surah: 29, ayat: 44 } },
+        { juz: 21, start: { surah: 29, ayat: 45 }, end: { surah: 33, ayat: 30 } },
+        { juz: 22, start: { surah: 33, ayat: 31 }, end: { surah: 36, ayat: 21 } },
+        { juz: 23, start: { surah: 36, ayat: 22 }, end: { surah: 39, ayat: 31 } },
+        { juz: 24, start: { surah: 39, ayat: 32 }, end: { surah: 41, ayat: 46 } },
+        { juz: 25, start: { surah: 41, ayat: 47 }, end: { surah: 45, ayat: 37 } },
+        { juz: 26, start: { surah: 46, ayat: 1 },  end: { surah: 51, ayat: 30 } },
+        { juz: 27, start: { surah: 51, ayat: 31 }, end: { surah: 57, ayat: 29 } },
+        { juz: 28, start: { surah: 58, ayat: 1 },  end: { surah: 66, ayat: 12 } },
+        { juz: 29, start: { surah: 67, ayat: 1 },  end: { surah: 77, ayat: 50 } },
+        { juz: 30, start: { surah: 78, ayat: 1 },  end: { surah: 114, ayat: 6 } }
+    ];
+
+    // ==================== STATE ====================
+    let surahCache = {};           // cache data surah dari API
+    let currentSurahData = null;   // data surah aktif (dari API)
+    let currentSurahMeta = null;   // metadata surah aktif
+    let currentAyat = 1;
+    let lastRead = JSON.parse(localStorage.getItem('fash90_lastRead_v2')) || null;
+
+    // DOM
+    const surahGrid = document.getElementById('surahGrid');
+    const surahLoading = document.getElementById('surahLoading');
+    const juzGrid = document.getElementById('juzGrid');
+    const readingContainer = document.getElementById('readingContainer');
+    const readingSurahName = document.getElementById('readingSurahName');
+    const readingJuzBadge = document.getElementById('readingJuzBadge');
+    const ayatNumberInput = document.getElementById('ayatNumber');
+    const ayatDisplay = document.getElementById('ayatDisplay');
+    const translationDisplay = document.getElementById('translationDisplay');
+    const prevAyatBtn = document.getElementById('prevAyatBtn');
+    const nextAyatBtn = document.getElementById('nextAyatBtn');
+    const goAyatBtn = document.getElementById('goAyatBtn');
+    const closeReadingBtn = document.getElementById('closeReadingBtn');
+    const lastReadCard = document.getElementById('lastReadCard');
+
+    // ==================== UTIL ====================
+    function getJuzForAyat(surahNo, ayatNo) {
+        for (let j of JUZ_RANGES) {
+            const afterStart = (surahNo > j.start.surah) || (surahNo === j.start.surah && ayatNo >= j.start.ayat);
+            const beforeEnd = (surahNo < j.end.surah) || (surahNo === j.end.surah && ayatNo <= j.end.ayat);
+            if (afterStart && beforeEnd) return j.juz;
+        }
+        return 1;
+    }
+
+    function saveLastRead(surahNo, surahName, ayatNo, juz) {
+        lastRead = { surahNo, surahName, ayatNo, juz, timestamp: Date.now() };
+        localStorage.setItem('fash90_lastRead_v2', JSON.stringify(lastRead));
+        renderLastReadTab();
+    }
+
+    // ==================== API FETCH ====================
+    async function fetchSurahList() {
+        try {
+            const res = await fetch(`${API_BASE}/surat`);
+            const json = await res.json();
+            if (json.code === 200 && json.data) {
+                return json.data;
+            }
+            throw new Error('Gagal memuat daftar surah');
+        } catch (e) {
+            console.error(e);
+            return null;
+        }
+    }
+
+    async function fetchSurahDetail(surahNo) {
+        if (surahCache[surahNo]) return surahCache[surahNo];
+        try {
+            const res = await fetch(`${API_BASE}/surat/${surahNo}`);
+            const json = await res.json();
+            if (json.code === 200 && json.data) {
+                surahCache[surahNo] = json.data;
+                return json.data;
+            }
+            throw new Error('Gagal memuat surah');
+        } catch (e) {
+            console.error(e);
+            return null;
+        }
+    }
+
+    // ==================== RENDER ====================
+    async function renderSurahList() {
+        const list = await fetchSurahList();
+        if (!list) {
+            surahLoading.innerHTML = '<p style="color:#c0392b;">Gagal memuat. Periksa koneksi internet.</p>';
+            return;
+        }
+        surahGrid.innerHTML = '';
+        list.forEach(s => {
+            const div = document.createElement('div');
+            div.className = 'surah-item';
+            div.innerHTML = `
+                <div class="surah-left">
+                    <div class="surah-number">${s.nomor}</div>
+                    <div class="surah-name">
+                        <h4>${s.namaLatin}</h4>
+                        <span>${s.jumlahAyat} ayat · ${s.arti}</span>
+                    </div>
+                </div>
+                <div class="surah-arabic">${s.nama}</div>
+            `;
+            div.addEventListener('click', () => openSurah(s.nomor, 1));
+            surahGrid.appendChild(div);
+        });
+        surahLoading.classList.add('hidden');
+        surahGrid.classList.remove('hidden');
+    }
+
+    function renderJuzList() {
+        juzGrid.innerHTML = '';
+        JUZ_RANGES.forEach(j => {
+            const div = document.createElement('div');
+            div.className = 'surah-item';
+            div.innerHTML = `
+                <div class="surah-left">
+                    <div class="surah-number">${j.juz}</div>
+                    <div class="surah-name">
+                        <h4>Juz ${j.juz}</h4>
+                        <span>${j.start.surah}:${j.start.ayat} — ${j.end.surah}:${j.end.ayat}</span>
+                    </div>
+                </div>
+                <div class="surah-arabic"><i class="fas fa-chevron-right" style="font-size:1rem;color:#b8d1e3;"></i></div>
+            `;
+            div.addEventListener('click', () => {
+                // Buka surah pertama di juz ini
+                openSurah(j.start.surah, j.start.ayat);
+            });
+            juzGrid.appendChild(div);
+        });
+    }
+
+    function renderLastReadTab() {
+        if (!lastRead || !lastRead.surahNo) {
+            lastReadCard.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-bookmark"></i>
+                    <p>Belum ada progres bacaan.<br>Silakan buka surah terlebih dahulu.</p>
+                </div>
+            `;
+            return;
+        }
+        lastReadCard.innerHTML = `
+            <div class="last-read-header"><i class="fas fa-clock"></i> TERAKHIR DIBACA</div>
+            <div class="last-read-content">
+                <div class="surah-info">
+                    <h3>${lastRead.surahName}</h3>
+                    <p>
+                        <span><i class="fas fa-book"></i> Ayat ${lastRead.ayatNo}</span>
+                        <span><i class="fas fa-layer-group"></i> Juz ${lastRead.juz || '—'}</span>
+                    </p>
+                </div>
+                <div class="ayat-badge"><i class="fas fa-undo-alt"></i> Lanjutkan</div>
+            </div>
+            <button class="btn-lanjut" id="continueReadingBtn">
+                <i class="fas fa-play"></i> Lanjutkan Membaca
+            </button>
+        `;
+        document.getElementById('continueReadingBtn').addEventListener('click', () => {
+            // Pindah ke tab surah
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('tabSurahBtn').classList.add('active');
+            document.getElementById('tab-surah').classList.add('active');
+            openSurah(lastRead.surahNo, lastRead.ayatNo);
+        });
+    }
+
+    // ==================== OPEN SURAH ====================
+    async function openSurah(surahNo, ayatNo = 1) {
+        readingContainer.classList.add('hidden');
+        // Tampilkan loading di reading area? Kita langsung fetch
+        const data = await fetchSurahDetail(surahNo);
+        if (!data) {
+            alert('Gagal memuat surah. Periksa koneksi.');
+            return;
+        }
+        currentSurahData = data;
+        currentSurahMeta = {
+            nomor: data.nomor,
+            namaLatin: data.namaLatin,
+            jumlahAyat: data.jumlahAyat,
+            nama: data.nama
+        };
+        currentAyat = Math.min(Math.max(1, ayatNo), data.jumlahAyat);
+
+        readingSurahName.textContent = `${data.nomor}. ${data.namaLatin} (${data.nama})`;
+        ayatNumberInput.max = data.jumlahAyat;
+        ayatNumberInput.value = currentAyat;
+
+        updateAyatDisplay();
+        readingContainer.classList.remove('hidden');
+        readingContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function updateAyatDisplay() {
+        if (!currentSurahData) return;
+        const ayatData = currentSurahData.ayat.find(a => a.nomorAyat === currentAyat);
+        if (!ayatData) return;
+
+        ayatDisplay.textContent = ayatData.teksArab || '—';
+        translationDisplay.textContent = ayatData.teksIndonesia || '—';
+        ayatNumberInput.value = currentAyat;
+
+        const juz = getJuzForAyat(currentSurahMeta.nomor, currentAyat);
+        readingJuzBadge.textContent = `Juz ${juz}`;
+
+        prevAyatBtn.disabled = (currentAyat <= 1);
+        nextAyatBtn.disabled = (currentAyat >= currentSurahMeta.jumlahAyat);
+
+        saveLastRead(currentSurahMeta.nomor, currentSurahMeta.namaLatin, currentAyat, juz);
+    }
+
+    function goToAyat(no) {
+        if (!currentSurahMeta) return;
+        let target = parseInt(no, 10);
+        if (isNaN(target)) target = 1;
+        target = Math.min(Math.max(1, target), currentSurahMeta.jumlahAyat);
+        currentAyat = target;
+        updateAyatDisplay();
+    }
+
+    // ==================== EVENT ====================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.dataset.tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+
+            // Sembunyikan reading area saat pindah tab? Biarkan tetap, tapi di tab last read tidak perlu.
+            if (tabId === 'tab-last') {
+                renderLastReadTab();
+            }
+        });
+    });
+
+    closeReadingBtn.addEventListener('click', () => {
+        readingContainer.classList.add('hidden');
+    });
+
+    goAyatBtn.addEventListener('click', () => {
+        if (currentSurahMeta) goToAyat(ayatNumberInput.value);
+    });
+
+    prevAyatBtn.addEventListener('click', () => {
+        if (currentAyat > 1) { currentAyat--; updateAyatDisplay(); }
+    });
+
+    nextAyatBtn.addEventListener('click', () => {
+        if (currentSurahMeta && currentAyat < currentSurahMeta.jumlahAyat) {
+            currentAyat++;
+            updateAyatDisplay();
+        }
+    });
+
+    ayatNumberInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && currentSurahMeta) goToAyat(ayatNumberInput.value);
+    });
+
+    // ==================== INIT ====================
+    (async function init() {
+        renderJuzList();
+        renderLastReadTab();
+        await renderSurahList();
+    })();
+</script>
+</body>
+</html>
